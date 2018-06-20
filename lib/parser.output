@@ -1,0 +1,141 @@
+state 9 contains 2 shift/reduce conflicts
+state 10 contains 2 shift/reduce conflicts
+
+
+-------- Grammar --------
+
+rule 1 expr: INT
+rule 2 expr: expr PLUS expr
+rule 3 expr: expr MUL expr
+rule 4 expr: LPAREN expr RPAREN
+
+------- Symbols -------
+
+**Nonterminals, with rules where they appear
+
+  $start (7)
+    on right: 
+    on left : 
+  expr (8)
+    on right: 2 3 4
+    on left : 1 2 3 4
+
+**Terminals, with rules where they appear
+
+  $end (0) 
+  error (1) 
+  INT (2) 1
+  PLUS (3) 2
+  MUL (4) 3
+  LPAREN (5) 4
+  RPAREN (6) 4
+
+--------- State ---------
+
+state 0
+
+
+  INT           shift, and go to state 2
+  LPAREN        shift, and go to state 3
+
+  expr          go to state 1
+
+state 1
+
+   2) expr : expr _ PLUS expr
+   3) expr : expr _ MUL expr
+
+  $end          shift, and go to state 4
+  PLUS          shift, and go to state 5
+  MUL           shift, and go to state 6
+
+
+state 2
+
+   1) expr : INT _
+
+  $default      reduce using rule 1 (expr)
+
+
+state 3
+
+   4) expr : LPAREN _ expr RPAREN
+
+  INT           shift, and go to state 2
+  LPAREN        shift, and go to state 3
+
+  expr          go to state 7
+
+state 4
+
+
+  $end          shift, and go to state 8
+
+
+state 5
+
+   2) expr : expr PLUS _ expr
+
+  INT           shift, and go to state 2
+  LPAREN        shift, and go to state 3
+
+  expr          go to state 9
+
+state 6
+
+   3) expr : expr MUL _ expr
+
+  INT           shift, and go to state 2
+  LPAREN        shift, and go to state 3
+
+  expr          go to state 10
+
+state 7
+
+   2) expr : expr _ PLUS expr
+   3) expr : expr _ MUL expr
+   4) expr : LPAREN expr _ RPAREN
+
+  PLUS          shift, and go to state 5
+  MUL           shift, and go to state 6
+  RPAREN        shift, and go to state 11
+
+
+state 8
+
+
+  $default      accept
+
+
+state 9
+
+   2) expr : expr _ PLUS expr
+   2) expr : expr PLUS expr _
+   3) expr : expr _ MUL expr
+
+  PLUS          shift, and go to state 5
+  PLUS          [reduce using rule 2 (expr)]
+  MUL           shift, and go to state 6
+  MUL           [reduce using rule 2 (expr)]
+  $default      reduce using rule 2 (expr)
+
+
+state 10
+
+   2) expr : expr _ PLUS expr
+   3) expr : expr _ MUL expr
+   3) expr : expr MUL expr _
+
+  PLUS          shift, and go to state 5
+  PLUS          [reduce using rule 3 (expr)]
+  MUL           shift, and go to state 6
+  MUL           [reduce using rule 3 (expr)]
+  $default      reduce using rule 3 (expr)
+
+
+state 11
+
+   4) expr : LPAREN expr RPAREN _
+
+  $default      reduce using rule 4 (expr)
+
