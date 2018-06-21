@@ -1,5 +1,8 @@
-state 9 contains 2 shift/reduce conflicts
 state 10 contains 2 shift/reduce conflicts
+state 11 contains 1 shift/reduce conflicts
+state 13 contains 2 shift/reduce conflicts
+state 14 contains 2 shift/reduce conflicts
+state 17 contains 2 shift/reduce conflicts
 
 
 -------- Grammar --------
@@ -8,17 +11,24 @@ rule 1 expr: INT
 rule 2 expr: expr PLUS expr
 rule 3 expr: expr MUL expr
 rule 4 expr: LPAREN expr RPAREN
+rule 5 expr: LIDENT
+rule 6 expr: SEND args
+rule 7 args: expr
+rule 8 args: args COMMA expr
 
 ------- Symbols -------
 
 **Nonterminals, with rules where they appear
 
-  $start (7)
+  $start (10)
     on right: 
     on left : 
-  expr (8)
-    on right: 2 3 4
-    on left : 1 2 3 4
+  expr (11)
+    on right: 2 3 4 7 8
+    on left : 1 2 3 4 5 6
+  args (12)
+    on right: 6 8
+    on left : 7 8
 
 **Terminals, with rules where they appear
 
@@ -29,6 +39,9 @@ rule 4 expr: LPAREN expr RPAREN
   MUL (4) 3
   LPAREN (5) 4
   RPAREN (6) 4
+  LIDENT (7) 5
+  SEND (8) 6
+  COMMA (9) 8
 
 --------- State ---------
 
@@ -37,6 +50,8 @@ state 0
 
   INT           shift, and go to state 2
   LPAREN        shift, and go to state 3
+  LIDENT        shift, and go to state 4
+  SEND          shift, and go to state 5
 
   expr          go to state 1
 
@@ -45,9 +60,9 @@ state 1
    2) expr : expr _ PLUS expr
    3) expr : expr _ MUL expr
 
-  $end          shift, and go to state 4
-  PLUS          shift, and go to state 5
-  MUL           shift, and go to state 6
+  $end          shift, and go to state 6
+  PLUS          shift, and go to state 7
+  MUL           shift, and go to state 8
 
 
 state 2
@@ -63,79 +78,151 @@ state 3
 
   INT           shift, and go to state 2
   LPAREN        shift, and go to state 3
+  LIDENT        shift, and go to state 4
+  SEND          shift, and go to state 5
 
-  expr          go to state 7
+  expr          go to state 9
 
 state 4
 
+   5) expr : LIDENT _
 
-  $end          shift, and go to state 8
+  $default      reduce using rule 5 (expr)
 
 
 state 5
+
+   6) expr : SEND _ args
+
+  INT           shift, and go to state 2
+  LPAREN        shift, and go to state 3
+  LIDENT        shift, and go to state 4
+  SEND          shift, and go to state 5
+
+  expr          go to state 10
+  args          go to state 11
+
+state 6
+
+
+  $end          shift, and go to state 12
+
+
+state 7
 
    2) expr : expr PLUS _ expr
 
   INT           shift, and go to state 2
   LPAREN        shift, and go to state 3
+  LIDENT        shift, and go to state 4
+  SEND          shift, and go to state 5
 
-  expr          go to state 9
+  expr          go to state 13
 
-state 6
+state 8
 
    3) expr : expr MUL _ expr
 
   INT           shift, and go to state 2
   LPAREN        shift, and go to state 3
+  LIDENT        shift, and go to state 4
+  SEND          shift, and go to state 5
 
-  expr          go to state 10
+  expr          go to state 14
 
-state 7
+state 9
 
    2) expr : expr _ PLUS expr
    3) expr : expr _ MUL expr
    4) expr : LPAREN expr _ RPAREN
 
-  PLUS          shift, and go to state 5
-  MUL           shift, and go to state 6
-  RPAREN        shift, and go to state 11
-
-
-state 8
-
-
-  $default      accept
-
-
-state 9
-
-   2) expr : expr _ PLUS expr
-   2) expr : expr PLUS expr _
-   3) expr : expr _ MUL expr
-
-  PLUS          shift, and go to state 5
-  PLUS          [reduce using rule 2 (expr)]
-  MUL           shift, and go to state 6
-  MUL           [reduce using rule 2 (expr)]
-  $default      reduce using rule 2 (expr)
+  PLUS          shift, and go to state 7
+  MUL           shift, and go to state 8
+  RPAREN        shift, and go to state 15
 
 
 state 10
 
    2) expr : expr _ PLUS expr
    3) expr : expr _ MUL expr
-   3) expr : expr MUL expr _
+   7) args : expr _
 
-  PLUS          shift, and go to state 5
-  PLUS          [reduce using rule 3 (expr)]
-  MUL           shift, and go to state 6
-  MUL           [reduce using rule 3 (expr)]
-  $default      reduce using rule 3 (expr)
+  PLUS          shift, and go to state 7
+  PLUS          [reduce using rule 7 (args)]
+  MUL           shift, and go to state 8
+  MUL           [reduce using rule 7 (args)]
+  $default      reduce using rule 7 (args)
 
 
 state 11
 
+   6) expr : SEND args _
+   8) args : args _ COMMA expr
+
+  COMMA         shift, and go to state 16
+  COMMA         [reduce using rule 6 (expr)]
+  $default      reduce using rule 6 (expr)
+
+
+state 12
+
+
+  $default      accept
+
+
+state 13
+
+   2) expr : expr _ PLUS expr
+   2) expr : expr PLUS expr _
+   3) expr : expr _ MUL expr
+
+  PLUS          shift, and go to state 7
+  PLUS          [reduce using rule 2 (expr)]
+  MUL           shift, and go to state 8
+  MUL           [reduce using rule 2 (expr)]
+  $default      reduce using rule 2 (expr)
+
+
+state 14
+
+   2) expr : expr _ PLUS expr
+   3) expr : expr _ MUL expr
+   3) expr : expr MUL expr _
+
+  PLUS          shift, and go to state 7
+  PLUS          [reduce using rule 3 (expr)]
+  MUL           shift, and go to state 8
+  MUL           [reduce using rule 3 (expr)]
+  $default      reduce using rule 3 (expr)
+
+
+state 15
+
    4) expr : LPAREN expr RPAREN _
 
   $default      reduce using rule 4 (expr)
+
+
+state 16
+
+   8) args : args COMMA _ expr
+
+  INT           shift, and go to state 2
+  LPAREN        shift, and go to state 3
+  LIDENT        shift, and go to state 4
+  SEND          shift, and go to state 5
+
+  expr          go to state 17
+
+state 17
+
+   2) expr : expr _ PLUS expr
+   3) expr : expr _ MUL expr
+   8) args : args COMMA expr _
+
+  PLUS          shift, and go to state 7
+  PLUS          [reduce using rule 8 (args)]
+  MUL           shift, and go to state 8
+  MUL           [reduce using rule 8 (args)]
+  $default      reduce using rule 8 (args)
 
